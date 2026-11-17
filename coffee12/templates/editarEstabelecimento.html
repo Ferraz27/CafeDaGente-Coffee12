@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block titulo %}Editar cafeteria{% endblock %}
+
+{% block conteudo %}
+<div class="container container-estreito">
+  <div class="cabecalho">
+    <h1>Dados da cafeteria</h1>
+    <p>O que os clientes veem no topo da página de {{ cafeteria.nome }}.</p>
+  </div>
+  {% include 'partials/form_estabelecimento.html' with texto_botao='Salvar alterações' %}
+
+  <section class="painel formulario mt-4" style="border-color: var(--cereja-clara)">
+    <h2 class="h6">Excluir cafeteria</h2>
+    <p class="texto-suave small">Remove a cafeteria, o cardápio, as reservas e as avaliações. Não dá para desfazer.</p>
+    <button class="btn btn-perigo btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#confirmarExclusao">Excluir {{ cafeteria.nome }}</button>
+  </section>
+</div>
+
+<div class="modal fade" id="confirmarExclusao" tabindex="-1" aria-labelledby="tituloExclusao" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <form class="modal-content" method="post" action="{% url 'excluirEstabelecimento' %}">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h2 class="modal-title h5" id="tituloExclusao">Excluir {{ cafeteria.nome }}?</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        Cardápio, reservas, avaliações e pedidos de itens esquecidos serão apagados junto. Essa ação não pode ser desfeita.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-claro" data-bs-dismiss="modal">Manter cafeteria</button>
+        <button type="submit" class="btn btn-perigo">Excluir definitivamente</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

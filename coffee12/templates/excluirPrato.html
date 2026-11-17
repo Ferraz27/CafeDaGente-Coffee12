@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Cardápio{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <h1>Cardápio</h1>
+      <p>Edite preços, crie promoções ou tire itens que acabaram.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'cadastrarPrato' %}"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Novo item</a>
+  </div>
+
+  {% if pratos %}
+    <div class="painel">
+      <table class="tabela-menu">
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col" class="esconder-mobile">Descrição</th>
+            <th scope="col" class="num">Preço</th>
+            <th scope="col"><span class="visually-hidden">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for prato in pratos %}
+          <tr>
+            <td>
+              <strong>{{ prato.nome }}</strong>
+              <div>
+                {% if prato.prato_principal %}<span class="etiqueta etiqueta-info">Principal</span>{% endif %}
+                {% if prato.em_promocao %}<span class="etiqueta etiqueta-promo">Promoção</span>{% endif %}
+              </div>
+            </td>
+            <td class="esconder-mobile texto-suave small">{{ prato.descricao|truncatechars:80 }}</td>
+            <td class="num">
+              {% if prato.em_promocao %}<s class="texto-suave small d-block">{{ prato.preco|brl }}</s>{{ prato.preco_promocional|brl }}{% else %}{{ prato.preco|brl }}{% endif %}
+            </td>
+            <td class="num">
+              <div class="d-inline-flex gap-1">
+                <a class="btn btn-claro btn-sm" href="{% url 'editarPrato' prato.id %}">Editar</a>
+                <form method="post" action="{% url 'excluirPrato' %}" onsubmit="return confirm('Tirar {{ prato.nome|escapejs }} do cardápio?')">
+                  {% csrf_token %}
+                  <input type="hidden" name="prato_id" value="{{ prato.id }}">
+                  <button class="btn btn-perigo btn-sm" type="submit" aria-label="Excluir {{ prato.nome }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-4" aria-hidden="true"></div>
+      <h2>Cardápio vazio</h2>
+      <p>Adicione bebidas, doces e salgados. Clientes veem tudo na página da cafeteria.</p>
+      <a class="btn btn-primary" href="{% url 'cadastrarPrato' %}">Adicionar item</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

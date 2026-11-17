@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Entrar{% endblock %}
+{% block rodape %}{% endblock %}
+
+{% block conteudo %}
+<div class="auth">
+  <div class="auth-arte azulejo-2" aria-hidden="true">
+    <div class="legenda">
+      <h2 class="h4">Bom te ver de novo.</h2>
+      <p>Suas favoritas, reservas e avaliações estão te esperando.</p>
+    </div>
+  </div>
+  <div class="auth-form">
+    <div class="caixa">
+      <h1 class="mb-1">Entrar</h1>
+      <p class="texto-suave mb-4">Use o nome de usuário e a senha da sua conta.</p>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% if form.non_field_errors %}
+          <div class="aviso aviso-danger mb-3" role="alert">Usuário ou senha incorretos. Confira e tente de novo.</div>
+        {% endif %}
+        <div class="mb-3">
+          <label class="form-label" for="id_username">Nome de usuário</label>
+          <input class="form-control" type="text" name="username" id="id_username" value="{{ form.username.value|default:'' }}" autocomplete="username" autofocus required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label" for="id_password">Senha</label>
+          <input class="form-control" type="password" name="password" id="id_password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+      </form>
+
+      <p class="mt-4 mb-0 texto-suave">Ainda não tem conta? <a href="{% url 'signup' %}">Crie a sua</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Avaliar {{ estabelecimento.nome }}{% endblock %}
+
+{% block conteudo %}
+<div class="container container-estreito">
+  <div class="cabecalho">
+    <a class="small" href="{% url 'perfilCafeteria' estabelecimento.id %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ estabelecimento.nome }}</a>
+    <h1 class="mt-2">Avalie {{ estabelecimento.nome }}</h1>
+    <p>Sua nota aparece no perfil da cafeteria e ajuda outras pessoas a escolher.</p>
+  </div>
+
+  <form method="post" class="painel formulario" novalidate>
+    {% csrf_token %}
+    <fieldset class="mb-3">
+      <legend class="form-label fs-6">Nota</legend>
+      <div class="seletor-nota">
+        {% for valor, rotulo in form.fields.rating.choices %}
+          <input type="radio" name="{{ form.rating.html_name }}" id="nota-{{ valor }}" value="{{ valor }}" {% if form.rating.value|stringformat:"s" == valor|stringformat:"s" %}checked{% endif %} required>
+          <label for="nota-{{ valor }}" title="{{ valor }} estrela{{ valor|pluralize }}">
+            <span class="visually-hidden">{{ valor }} estrela{{ valor|pluralize }}</span>
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 14.9l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9z"/></svg>
+          </label>
+        {% endfor %}
+      </div>
+      {% for erro in form.rating.errors %}<div class="invalid-feedback">Escolha uma nota de 1 a 5.</div>{% endfor %}
+    </fieldset>
+    {% campo form.comment %}
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary" type="submit">Publicar avaliação</button>
+      <a class="btn btn-link" href="{% url 'perfilCafeteria' estabelecimento.id %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

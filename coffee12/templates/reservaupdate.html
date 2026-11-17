@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block titulo %}Alterar reserva{% endblock %}
+
+{% block conteudo %}
+<div class="container container-estreito">
+  <div class="cabecalho">
+    <a class="small" href="{% url 'reserva_list' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Reservas</a>
+    <h1 class="mt-2">Alterar reserva</h1>
+    <p>{{ reserva.cafe.nome }}. Ao salvar, a reserva volta para “aguardando confirmação”.</p>
+  </div>
+  {% url 'reserva_list' as voltar_para %}
+  {% include 'partials/form_reserva.html' with texto_botao='Salvar alteração' voltar_para=voltar_para %}
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Explorar cafeterias{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Olá, {{ user.username }}. Onde vai ser o café?</h1>
+    <p>{{ estabelecimentos|length }} cafeteria{{ estabelecimentos|length|pluralize }} {% if busca %}para “{{ busca }}”{% else %}na plataforma{% endif %}.</p>
+  </div>
+
+  <form class="busca mb-4" method="get" role="search">
+    <label class="visually-hidden" for="busca">Buscar</label>
+    <input class="form-control" type="search" id="busca" name="q" value="{{ busca }}" placeholder="Busque por nome, endereço ou prato">
+    <label class="visually-hidden" for="ordem">Ordenar por</label>
+    <select class="form-select" id="ordem" name="ordem" onchange="this.form.submit()">
+      <option value="nota" {% if ordem == 'nota' %}selected{% endif %}>Melhor avaliadas</option>
+      <option value="nome" {% if ordem == 'nome' %}selected{% endif %}>Nome (A–Z)</option>
+    </select>
+    <button class="btn btn-primary" type="submit">Buscar</button>
+    {% if busca %}<a class="btn btn-link" href="{% url 'homepage' %}">Limpar busca</a>{% endif %}
+  </form>
+
+  {% if estabelecimentos %}
+    <div class="grade-cafes">
+      {% for cafe in estabelecimentos %}
+        {% include 'partials/cafe_card.html' with cafe=cafe mostrar_favorito=True %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-2" aria-hidden="true"></div>
+      {% if busca %}
+        <h2>Nada encontrado para “{{ busca }}”</h2>
+        <p>Tente outro nome, um bairro ou o nome de um prato.</p>
+        <a class="btn btn-claro" href="{% url 'homepage' %}">Ver todas as cafeterias</a>
+      {% else %}
+        <h2>Nenhuma cafeteria cadastrada ainda</h2>
+        <p>Assim que as primeiras cafeterias entrarem na plataforma, elas aparecem aqui.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

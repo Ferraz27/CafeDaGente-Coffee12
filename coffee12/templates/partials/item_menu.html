@@ -1,0 +1,15 @@
+{% load cafe_tags %}
+<div class="item-menu">
+  <div class="linha">
+    <span class="nome">{{ prato.nome }}</span>
+    <span class="pontilhado" aria-hidden="true"></span>
+    <span class="preco">
+      {% if prato.em_promocao %}
+        <s aria-label="de">{{ prato.preco|brl }}</s><span class="promo">{{ prato.preco_promocional|brl }}</span>
+      {% else %}
+        {{ prato.preco|brl }}
+      {% endif %}
+    </span>
+  </div>
+  {% if prato.descricao %}<p class="descricao">{{ prato.descricao }}</p>{% endif %}
+</div>

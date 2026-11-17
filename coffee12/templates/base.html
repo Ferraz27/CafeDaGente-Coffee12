@@ -1,0 +1,120 @@
+{% load static cafe_tags %}<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Café da Gente{% endblock %} · Café da Gente</title>
+  <link rel="icon" href="{% static 'Logo.ico' %}" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{% static 'css/app.css' %}" rel="stylesheet">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="visually-hidden-focusable position-absolute top-0 start-0 m-2 btn btn-primary" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="barra">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        {% if user.is_authenticated %}
+          <a class="marca" href="{% if eh_dono_cafe %}{% url 'homepagecafe' %}{% else %}{% url 'homepage' %}{% endif %}">
+        {% else %}
+          <a class="marca" href="{% url 'inicio' %}">
+        {% endif %}
+            {% include 'partials/logo.html' %}
+            Café da Gente
+          </a>
+
+        {% if user.is_authenticated %}
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu" aria-expanded="false" aria-label="Abrir menu">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-lg-4 me-auto">
+              {% if eh_dono_cafe %}
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'homepagecafe' %}ativo{% endif %}" href="{% url 'homepagecafe' %}">Painel</a></li>
+                {% if minha_cafeteria %}
+                  <li class="nav-item"><a class="nav-link {% if rota_atual == 'excluirPrato' or rota_atual == 'cadastrarPrato' or rota_atual == 'editarPrato' %}ativo{% endif %}" href="{% url 'excluirPrato' %}">Cardápio</a></li>
+                  <li class="nav-item"><a class="nav-link {% if rota_atual == 'reserva_listar' %}ativo{% endif %}" href="{% url 'reserva_listar' %}">Reservas{% if nav_reservas_pendentes %}<span class="contador" title="pendentes">{{ nav_reservas_pendentes }}</span>{% endif %}</a></li>
+                  <li class="nav-item"><a class="nav-link {% if rota_atual == 'solicitacoes' %}ativo{% endif %}" href="{% url 'solicitacoes' %}">Itens esquecidos{% if nav_itens_pendentes %}<span class="contador" title="pendentes">{{ nav_itens_pendentes }}</span>{% endif %}</a></li>
+                  <li class="nav-item"><a class="nav-link {% if rota_atual == 'verFeedbacks' %}ativo{% endif %}" href="{% url 'verFeedbacks' minha_cafeteria.id %}">Avaliações</a></li>
+                {% endif %}
+              {% else %}
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'homepage' %}ativo{% endif %}" href="{% url 'homepage' %}">Explorar</a></li>
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'favoritos' %}ativo{% endif %}" href="{% url 'favoritos' %}">Favoritos</a></li>
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'reserva_list' or rota_atual == 'reserva_update' %}ativo{% endif %}" href="{% url 'reserva_list' %}">Reservas</a></li>
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'historico' %}ativo{% endif %}" href="{% url 'historico' %}">Histórico</a></li>
+                <li class="nav-item"><a class="nav-link {% if rota_atual == 'listar_requisicoes_cliente' %}ativo{% endif %}" href="{% url 'listar_requisicoes_cliente' %}">Itens esquecidos</a></li>
+              {% endif %}
+            </ul>
+            <div class="dropdown">
+              <button class="btn p-0 border-0 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="avatar" aria-hidden="true">{{ user.username|iniciais }}</span>
+                <span class="fw-semibold">{{ user.username }}</span>
+                <i class="bi bi-chevron-down small" aria-hidden="true"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><span class="dropdown-item-text small texto-suave">{% if eh_dono_cafe %}Dono de cafeteria{% else %}Cliente{% endif %}</span></li>
+                {% if eh_dono_cafe and minha_cafeteria %}
+                  <li><a class="dropdown-item" href="{% url 'perfilCafeteria' minha_cafeteria.id %}">Ver página pública</a></li>
+                  <li><a class="dropdown-item" href="{% url 'editarEstabelecimento' %}">Editar cafeteria</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+                    <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>Sair</button>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </div>
+        {% else %}
+          <div class="d-flex gap-2">
+            {% if rota_atual != 'login' %}<a class="btn btn-claro" href="{% url 'login' %}">Entrar</a>{% endif %}
+            {% if rota_atual != 'signup' and rota_atual != 'signupCafe' %}<a class="btn btn-primary {% if rota_atual != 'login' %}d-none d-sm-inline-block{% endif %}" href="{% url 'signup' %}">Criar conta</a>{% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  <main id="conteudo">
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  {% block rodape %}
+  <footer class="rodape">
+    <div class="container d-flex flex-wrap justify-content-between gap-2">
+      <span>Café da Gente · as cafeterias de Recife num lugar só</span>
+      <span>Projeto do grupo 12 · CESAR School</span>
+    </div>
+  </footer>
+  {% endblock %}
+
+  {% if messages %}
+    {# Avisos flutuantes: não empurram o layout e somem sozinhos #}
+    <div class="avisos" role="status" aria-live="polite">
+      {% for message in messages %}
+        <div class="aviso aviso-{{ message.tags }}">
+          <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill{% elif message.tags == 'danger' %}bi-exclamation-circle-fill{% elif message.tags == 'warning' %}bi-exclamation-triangle-fill{% else %}bi-info-circle-fill{% endif %}" aria-hidden="true"></i>
+          <span>{{ message }}</span>
+          <button type="button" class="btn-close" aria-label="Fechar aviso"></button>
+        </div>
+      {% endfor %}
+    </div>
+    <script>
+      document.querySelectorAll('.aviso').forEach(function (aviso) {
+        var fechar = function () { aviso.classList.add('saindo'); setTimeout(function () { aviso.remove(); }, 250); };
+        aviso.querySelector('.btn-close').addEventListener('click', fechar);
+        if (!aviso.classList.contains('aviso-danger')) setTimeout(fechar, 6000);
+      });
+    </script>
+  {% endif %}
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

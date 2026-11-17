@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block titulo %}Suas reservas{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Suas reservas</h1>
+    <p>Acompanhe os pedidos de mesa e altere ou cancele quando precisar.</p>
+  </div>
+
+  {% if proximas %}
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for reserva in proximas %}
+          <li class="lista-item">
+            <div class="data-bloco" aria-hidden="true">
+              <div class="mes">{{ reserva.data_hora|date:"M"|upper }}</div>
+              <div class="dia">{{ reserva.data_hora|date:"d" }}</div>
+            </div>
+            <div class="info">
+              <strong><a href="{% url 'perfilCafeteria' reserva.cafe.id %}">{{ reserva.cafe.nome }}</a></strong>
+              <span class="meta">{{ reserva.data_hora|date:"l"|lower }}, {{ reserva.data_hora|date:"H:i" }} · {{ reserva.numero_pessoas }} pessoa{{ reserva.numero_pessoas|pluralize }}</span>
+              <div class="mt-1">{% include 'partials/status_reserva.html' %}</div>
+            </div>
+            {% if reserva.status == 'PE' or reserva.status == 'AC' %}
+            <div class="acoes">
+              <a class="btn btn-claro btn-sm" href="{% url 'reserva_update' reserva.id %}">Alterar</a>
+              <form method="post" action="{% url 'reserva_cancel' reserva.id %}" onsubmit="return confirm('Cancelar a reserva em {{ reserva.cafe.nome|escapejs }}?')">{% csrf_token %}
+                <button class="btn btn-perigo btn-sm" type="submit">Cancelar</button>
+              </form>
+            </div>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-2" aria-hidden="true"></div>
+      <h2>Nenhuma reserva marcada</h2>
+      <p>Escolha uma cafeteria e use “Reservar mesa” na página dela.</p>
+      <a class="btn btn-primary" href="{% url 'homepage' %}">Explorar cafeterias</a>
+    </div>
+  {% endif %}
+
+  {% if anteriores %}
+    <h2 class="h5 mt-5 mb-3">Anteriores e canceladas</h2>
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for reserva in anteriores %}
+          <li class="lista-item">
+            <div class="info">
+              <strong>{{ reserva.cafe.nome }}</strong>
+              <span class="meta">{{ reserva.data_hora|date:"d/m/Y, H:i" }} · {{ reserva.numero_pessoas }} pessoa{{ reserva.numero_pessoas|pluralize }}</span>
+            </div>
+            {% include 'partials/status_reserva.html' %}
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

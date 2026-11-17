@@ -1,0 +1,10 @@
+{% load cafe_tags %}
+<article class="avaliacao">
+  <div class="autor">
+    <span class="avatar" aria-hidden="true">{{ fb.user.username|iniciais }}</span>
+    <strong>{{ fb.user.username }}</strong>
+    {% estrelas fb.rating %}
+    <span class="texto-suave small ms-auto">{{ fb.created_at|date:"d/m/Y" }}</span>
+  </div>
+  <p>{{ fb.comment|linebreaksbr }}</p>
+</article>

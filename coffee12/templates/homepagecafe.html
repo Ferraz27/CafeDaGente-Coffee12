@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Painel{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+{% if not cafeteria %}
+  <div class="cabecalho">
+    <h1>Boas-vindas, {{ user.username }}.</h1>
+    <p>Falta só um passo para sua cafeteria aparecer para os clientes.</p>
+  </div>
+  <div class="vazio-box">
+    <div class="selo azulejo-3" aria-hidden="true"></div>
+    <h2>Cadastre sua cafeteria</h2>
+    <p>Informe nome, endereço, telefone e horário. Depois você monta o cardápio e começa a receber reservas.</p>
+    <a class="btn btn-primary" href="{% url 'cadastrarEstabelecimento' %}">Cadastrar cafeteria</a>
+  </div>
+{% else %}
+  <div class="cabecalho d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <h1>{{ cafeteria.nome }}</h1>
+      <p>{{ cafeteria.endereco }}{% if cafeteria.descricao_horario %} · {{ cafeteria.descricao_horario }}{% endif %}</p>
+    </div>
+    <div class="acoes">
+      <a class="btn btn-claro" href="{% url 'perfilCafeteria' cafeteria.id %}">Ver como cliente</a>
+      <a class="btn btn-primary" href="{% url 'cadastrarPrato' %}"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Novo item</a>
+    </div>
+  </div>
+
+  <div class="indicadores mb-4">
+    <a class="indicador {% if reservas_pendentes %}chama{% endif %}" href="{% url 'reserva_listar' %}">
+      <div class="valor">{{ reservas_pendentes }}</div>
+      <div class="rotulo">reserva{{ reservas_pendentes|pluralize }} para confirmar</div>
+    </a>
+    <a class="indicador {% if itens_pendentes %}chama{% endif %}" href="{% url 'solicitacoes' %}">
+      <div class="valor">{{ itens_pendentes }}</div>
+      <div class="rotulo">ite{{ itens_pendentes|pluralize:"m,ns" }} esquecido{{ itens_pendentes|pluralize }} para procurar</div>
+    </a>
+    <a class="indicador" href="{% url 'verFeedbacks' cafeteria.id %}">
+      <div class="valor">{% if rating_average %}{{ rating_average|nota }}{% else %}–{% endif %}</div>
+      <div class="rotulo">nota média · {{ total_avaliacoes }} avaliaç{{ total_avaliacoes|pluralize:"ão,ões" }}</div>
+    </a>
+    <a class="indicador" href="{% url 'excluirPrato' %}">
+      <div class="valor">{{ pratos|length }}</div>
+      <div class="rotulo">ite{{ pratos|length|pluralize:"m,ns" }} no cardápio</div>
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <section class="painel">
+        <div class="painel-titulo">
+          <h2 class="h5">Cardápio</h2>
+          <a class="small" href="{% url 'excluirPrato' %}">Gerenciar</a>
+        </div>
+        {% if pratos %}
+          <table class="tabela-menu">
+            <thead><tr><th scope="col">Item</th><th scope="col" class="num">Preço</th><th scope="col"><span class="visually-hidden">Ações</span></th></tr></thead>
+            <tbody>
+            {% for prato in pratos %}
+              <tr>
+                <td>
+                  <strong>{{ prato.nome }}</strong>
+                  {% if prato.prato_principal %}<span class="etiqueta etiqueta-info ms-1">Principal</span>{% endif %}
+                  {% if prato.em_promocao %}<span class="etiqueta etiqueta-promo ms-1">Promoção</span>{% endif %}
+                </td>
+                <td class="num">
+                  {% if prato.em_promocao %}<s class="texto-suave small me-1">{{ prato.preco|brl }}</s>{{ prato.preco_promocional|brl }}{% else %}{{ prato.preco|brl }}{% endif %}
+                </td>
+                <td class="num"><a class="btn btn-claro btn-sm" href="{% url 'editarPrato' prato.id %}">Editar</a></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="texto-suave">Seu cardápio está vazio. Clientes veem os itens e as promoções na página da cafeteria.</p>
+          <a class="btn btn-primary btn-sm" href="{% url 'cadastrarPrato' %}">Adicionar o primeiro item</a>
+        {% endif %}
+      </section>
+    </div>
+    <div class="col-lg-5">
+      <section class="painel">
+        <div class="painel-titulo">
+          <h2 class="h5">Últimas avaliações</h2>
+          {% if total_avaliacoes %}<a class="small" href="{% url 'verFeedbacks' cafeteria.id %}">Ver todas</a>{% endif %}
+        </div>
+        {% for fb in ultimos_feedbacks %}
+          {% include 'partials/avaliacao.html' %}
+        {% empty %}
+          <p class="texto-suave mb-0">Quando os clientes avaliarem, os comentários aparecem aqui.</p>
+        {% endfor %}
+      </section>
+    </div>
+  </div>
+{% endif %}
+</div>
+{% endblock %}

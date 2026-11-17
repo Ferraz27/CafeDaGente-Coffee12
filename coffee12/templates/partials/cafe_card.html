@@ -1,0 +1,41 @@
+{% load cafe_tags %}
+<article class="cafe">
+  <div class="cafe-topo azulejo-{{ cafe.nome|azulejo }}" aria-hidden="true"></div>
+  <div class="cafe-corpo">
+    <h3><a href="{% url 'perfilCafeteria' cafe.id %}">{{ cafe.nome }}</a></h3>
+    <div class="cafe-endereco">{{ cafe.endereco }}</div>
+    <div class="mb-3">
+      {% if cafe.media %}
+        {% estrelas cafe.media %} <span class="nota-media ms-1">{{ cafe.media|nota }}</span>
+        <span class="texto-suave small">({{ cafe.total_avaliacoes }} avaliaç{{ cafe.total_avaliacoes|pluralize:"ão,ões" }})</span>
+      {% else %}
+        <span class="sem-nota">Ainda sem avaliações</span>
+      {% endif %}
+    </div>
+    {% if cafe.destaques or cafe.promocoes %}
+      <ul class="cafe-destaques">
+        {% for prato in cafe.destaques|slice:":3" %}
+          <li><span>{{ prato.nome }}</span><span>{% if prato.em_promocao %}{{ prato.preco_promocional|brl }}{% else %}{{ prato.preco|brl }}{% endif %}</span></li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <div class="cafe-rodape">
+      {% if cafe.promocoes %}
+        <span class="etiqueta etiqueta-promo">{{ cafe.promocoes|length }} promoç{{ cafe.promocoes|length|pluralize:"ão,ões" }}</span>
+      {% else %}
+        <span></span>
+      {% endif %}
+      {% if mostrar_favorito %}
+        {% if cafe.id in favoritos_ids %}
+          <form method="post" action="{% url 'desfavoritarCafeteria' cafe.id %}">{% csrf_token %}
+            <button type="submit" class="btn-favorito ativo" aria-label="Remover {{ cafe.nome }} dos favoritos"><i class="bi bi-heart-fill" aria-hidden="true"></i> Favorita</button>
+          </form>
+        {% else %}
+          <form method="post" action="{% url 'favoritarCafeteria' cafe.id %}">{% csrf_token %}
+            <button type="submit" class="btn-favorito" aria-label="Adicionar {{ cafe.nome }} aos favoritos"><i class="bi bi-heart" aria-hidden="true"></i> Favoritar</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</article>

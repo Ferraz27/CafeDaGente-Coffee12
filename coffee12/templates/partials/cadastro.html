@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block rodape %}{% endblock %}
+
+{% block conteudo %}
+<div class="auth">
+  <div class="auth-arte {% if papel == 'dono' %}azulejo-3{% else %}azulejo-4{% endif %}" aria-hidden="true">
+    <div class="legenda">
+      {% if papel == 'dono' %}
+        <h2 class="h4">Coloque sua cafeteria no mapa.</h2>
+        <p>Publique o cardápio, destaque promoções e receba reservas e avaliações.</p>
+      {% else %}
+        <h2 class="h4">Seu próximo café favorito está aqui.</h2>
+        <p>Salve cafeterias, reserve mesas e acompanhe as visitas.</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="auth-form">
+    <div class="caixa">
+      <h1 class="mb-3">Criar conta</h1>
+      <div class="alternar-papel" role="tablist" aria-label="Tipo de conta">
+        <a href="{% url 'signup' %}" class="{% if papel != 'dono' %}ativo{% endif %}" {% if papel != 'dono' %}aria-current="page"{% endif %}>Sou cliente</a>
+        <a href="{% url 'signupCafe' %}" class="{% if papel == 'dono' %}ativo{% endif %}" {% if papel == 'dono' %}aria-current="page"{% endif %}>Tenho uma cafeteria</a>
+      </div>
+
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for erro in form.non_field_errors %}<div class="aviso aviso-danger mb-3" role="alert">{{ erro }}</div>{% endfor %}
+        {% campo form.username %}
+        {% campo form.email %}
+        {% campo form.phone_number %}
+        <div class="row g-2">
+          <div class="col-sm-6">{% campo form.password1 %}</div>
+          <div class="col-sm-6">{% campo form.password2 %}</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 mt-1">{% if papel == 'dono' %}Criar conta e cadastrar cafeteria{% else %}Criar conta{% endif %}</button>
+      </form>
+
+      <p class="mt-4 mb-0 texto-suave">Já tem conta? <a href="{% url 'login' %}">Entre aqui</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

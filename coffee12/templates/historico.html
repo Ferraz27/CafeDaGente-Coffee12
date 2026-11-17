@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block titulo %}Histórico de visitas{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Histórico de visitas</h1>
+    <p>As cafeterias onde você registrou presença, da mais recente para a mais antiga.</p>
+  </div>
+
+  {% if historico %}
+    <div class="painel py-1">
+      <ul class="lista">
+        {% for item in historico %}
+          <li class="lista-item">
+            <div class="data-bloco" aria-hidden="true">
+              <div class="mes">{{ item.visit_date|date:"M"|upper }}</div>
+              <div class="dia">{{ item.visit_date|date:"d" }}</div>
+            </div>
+            <div class="info">
+              <strong><a href="{% url 'perfilCafeteria' item.cafeteria.id %}">{{ item.cafeteria.nome }}</a></strong>
+              <span class="meta">{{ item.visit_date|date:"d/m/Y" }} às {{ item.visit_date|date:"H:i" }}</span>
+            </div>
+            <div class="acoes">
+              <a class="btn btn-claro btn-sm" href="{% url 'feedback' item.cafeteria.id %}">Avaliar</a>
+              <a class="btn btn-claro btn-sm" href="{% url 'solicitaritem' item.cafeteria.id %}">Esqueci algo</a>
+              <form method="post" action="{% url 'remove_visit' item.id %}">{% csrf_token %}
+                <button class="btn btn-perigo btn-sm" type="submit" aria-label="Remover visita: {{ item.cafeteria.nome }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-1" aria-hidden="true"></div>
+      <h2>Nenhuma visita registrada</h2>
+      <p>Na página de uma cafeteria, use “Registrar visita” para guardar a passagem por lá.</p>
+      <a class="btn btn-primary" href="{% url 'homepage' %}">Explorar cafeterias</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

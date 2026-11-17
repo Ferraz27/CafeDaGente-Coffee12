@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block titulo %}Itens esquecidos{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Itens esquecidos</h1>
+    <p>Os pedidos que você fez às cafeterias e o que cada uma respondeu.</p>
+  </div>
+
+  {% if requisicoes %}
+    <div class="painel py-1">
+      <ul class="lista">
+        {% for item in requisicoes %}
+          <li class="lista-item">
+            <div class="info">
+              <strong>{{ item.descricao }}</strong>
+              <span class="meta"><a href="{% url 'perfilCafeteria' item.cafeteria.id %}">{{ item.cafeteria.nome }}</a>{% if item.status == 'AC' %} · Passe lá para buscar{% if item.cafeteria.telefone %} ou ligue para {{ item.cafeteria.telefone }}{% endif %}.{% endif %}</span>
+            </div>
+            {% include 'partials/status_item.html' %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-3" aria-hidden="true"></div>
+      <h2>Nenhum pedido feito</h2>
+      <p>Se esquecer algo numa cafeteria, use “Esqueci algo” na página dela ou no seu histórico.</p>
+      <a class="btn btn-claro" href="{% url 'historico' %}">Ir para o histórico</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block titulo %}Itens esquecidos{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Itens esquecidos</h1>
+    <p>Clientes que deixaram algo na cafeteria. Procure e marque o resultado para avisá-los.</p>
+  </div>
+
+  <h2 class="h5 mb-3">Procurando{% if pendentes %} ({{ pendentes|length }}){% endif %}</h2>
+  {% if pendentes %}
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for item in pendentes %}
+          <li class="lista-item">
+            <div class="info">
+              <strong>{{ item.descricao }}</strong>
+              <span class="meta">Pedido de {{ item.cliente.username }}{% if item.cliente.phone_number %} · {{ item.cliente.phone_number }}{% endif %}</span>
+            </div>
+            <div class="acoes">
+              <form method="post" action="{% url 'marcar_item_achado' item.id %}">{% csrf_token %}
+                <button class="btn btn-sucesso btn-sm" type="submit">Encontrei</button>
+              </form>
+              <form method="post" action="{% url 'marcar_item_nao_achado' item.id %}">{% csrf_token %}
+                <button class="btn btn-claro btn-sm" type="submit">Não encontrei</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <p class="texto-suave">Nenhum item para procurar agora.</p>
+  {% endif %}
+
+  {% if resolvidas %}
+    <h2 class="h5 mt-5 mb-3">Respondidos</h2>
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for item in resolvidas %}
+          <li class="lista-item">
+            <div class="info">
+              <strong>{{ item.descricao }}</strong>
+              <span class="meta">Pedido de {{ item.cliente.username }}</span>
+            </div>
+            {% include 'partials/status_item.html' %}
+            <form method="post" action="{% url 'remover_requisicao' item.id %}">{% csrf_token %}
+              <button class="btn btn-perigo btn-sm" type="submit" aria-label="Remover pedido {{ item.descricao }}"><i class="bi bi-trash" aria-hidden="true"></i></button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+</div>
+{% endblock %}

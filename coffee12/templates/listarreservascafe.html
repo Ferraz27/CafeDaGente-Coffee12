@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block titulo %}Reservas{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    <h1>Reservas</h1>
+    <p>Confirme ou recuse os pedidos de mesa. O cliente vê a resposta na hora.</p>
+  </div>
+
+  <h2 class="h5 mb-3">Para confirmar{% if pendentes %} ({{ pendentes|length }}){% endif %}</h2>
+  {% if pendentes %}
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for reserva in pendentes %}
+          <li class="lista-item">
+            <div class="data-bloco" aria-hidden="true">
+              <div class="mes">{{ reserva.data_hora|date:"M"|upper }}</div>
+              <div class="dia">{{ reserva.data_hora|date:"d" }}</div>
+            </div>
+            <div class="info">
+              <strong>{{ reserva.cliente.username }}</strong>
+              <span class="meta">{{ reserva.data_hora|date:"l"|lower }}, {{ reserva.data_hora|date:"H:i" }} · {{ reserva.numero_pessoas }} pessoa{{ reserva.numero_pessoas|pluralize }}{% if reserva.cliente.phone_number %} · {{ reserva.cliente.phone_number }}{% endif %}</span>
+            </div>
+            <div class="acoes">
+              <form method="post" action="{% url 'reserva_aceitar' reserva.id %}">{% csrf_token %}
+                <button class="btn btn-sucesso btn-sm" type="submit"><i class="bi bi-check-lg me-1" aria-hidden="true"></i>Confirmar</button>
+              </form>
+              <form method="post" action="{% url 'reserva_recusar' reserva.id %}">{% csrf_token %}
+                <button class="btn btn-perigo btn-sm" type="submit">Recusar</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <p class="texto-suave">Nenhum pedido esperando resposta.</p>
+  {% endif %}
+
+  <h2 class="h5 mt-5 mb-3">Confirmadas</h2>
+  {% if confirmadas %}
+    <section class="painel py-1">
+      <ul class="lista">
+        {% for reserva in confirmadas %}
+          <li class="lista-item">
+            <div class="data-bloco" aria-hidden="true">
+              <div class="mes">{{ reserva.data_hora|date:"M"|upper }}</div>
+              <div class="dia">{{ reserva.data_hora|date:"d" }}</div>
+            </div>
+            <div class="info">
+              <strong>{{ reserva.cliente.username }}</strong>
+              <span class="meta">{{ reserva.data_hora|date:"l"|lower }}, {{ reserva.data_hora|date:"H:i" }} · {{ reserva.numero_pessoas }} pessoa{{ reserva.numero_pessoas|pluralize }}</span>
+            </div>
+            <span class="etiqueta etiqueta-sucesso">Confirmada</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <p class="texto-suave">Nenhuma reserva confirmada para os próximos dias.</p>
+  {% endif %}
+</div>
+{% endblock %}

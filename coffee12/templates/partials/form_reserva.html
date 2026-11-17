@@ -1,0 +1,14 @@
+{% load cafe_tags %}
+<form method="post" class="painel formulario" novalidate>
+  {% csrf_token %}
+  {% for erro in form.non_field_errors %}<div class="aviso aviso-danger mb-3" role="alert">{{ erro }}</div>{% endfor %}
+  <div class="row g-2">
+    <div class="col-sm-7">{% campo form.data_hora %}</div>
+    <div class="col-sm-5">{% campo form.numero_pessoas %}</div>
+  </div>
+  <p class="form-text mt-0">A cafeteria recebe o pedido e confirma ou recusa. Você acompanha o status em Reservas.</p>
+  <div class="d-flex gap-2">
+    <button class="btn btn-primary" type="submit">{{ texto_botao }}</button>
+    <a class="btn btn-link" href="{{ voltar_para }}">Cancelar</a>
+  </div>
+</form>

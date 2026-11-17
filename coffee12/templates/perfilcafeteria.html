@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}{{ estabelecimento.nome }}{% endblock %}
+
+{% block conteudo %}
+<div class="perfil-topo azulejo-{{ estabelecimento.nome|azulejo }}" aria-hidden="true"></div>
+<div class="container">
+  <div class="perfil-cabecalho">
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+      <div>
+        <h1>{{ estabelecimento.nome }}</h1>
+        <div class="mb-2">
+          {% if rating_average %}
+            {% estrelas rating_average 'lg' %} <span class="nota-media fs-5 ms-1">{{ rating_average|nota }}</span>
+            <a class="ms-1" href="{% url 'verFeedbacks' estabelecimento.id %}">{{ total_avaliacoes }} avaliaç{{ total_avaliacoes|pluralize:"ão,ões" }}</a>
+          {% else %}
+            <span class="sem-nota">Ainda sem avaliações</span>
+          {% endif %}
+        </div>
+        <div class="dados-cafe">
+          <span><i class="bi bi-geo-alt" aria-hidden="true"></i>{{ estabelecimento.endereco }}</span>
+          {% if estabelecimento.telefone %}<span><i class="bi bi-telephone" aria-hidden="true"></i>{{ estabelecimento.telefone }}</span>{% endif %}
+          {% if estabelecimento.descricao_horario %}<span><i class="bi bi-clock" aria-hidden="true"></i>{{ estabelecimento.descricao_horario }}</span>{% endif %}
+        </div>
+      </div>
+
+      {% if eh_dono %}
+        <a class="btn btn-claro" href="{% url 'editarEstabelecimento' %}"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar dados</a>
+      {% elif not eh_dono_cafe %}
+        <div class="d-flex flex-wrap gap-2">
+          <a class="btn btn-primary" href="{% url 'reserva_create' estabelecimento.id %}"><i class="bi bi-calendar-plus me-1" aria-hidden="true"></i>Reservar mesa</a>
+          {% if eh_favorita %}
+            <form method="post" action="{% url 'desfavoritarCafeteria' estabelecimento.id %}">{% csrf_token %}
+              <button class="btn-favorito ativo h-100" type="submit"><i class="bi bi-heart-fill" aria-hidden="true"></i> Favorita</button>
+            </form>
+          {% else %}
+            <form method="post" action="{% url 'favoritarCafeteria' estabelecimento.id %}">{% csrf_token %}
+              <button class="btn-favorito h-100" type="submit"><i class="bi bi-heart" aria-hidden="true"></i> Favoritar</button>
+            </form>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-4 mt-1">
+    <div class="col-lg-7">
+      <section class="cardapio" aria-labelledby="titulo-cardapio">
+        <h2 id="titulo-cardapio">Cardápio</h2>
+        {% if cardapio %}
+          {% if promocoes %}
+            <h3>Promoções</h3>
+            {% for prato in promocoes %}{% include 'partials/item_menu.html' %}{% endfor %}
+          {% endif %}
+          {% if destaques %}
+            <h3>Pratos principais</h3>
+            {% for prato in destaques %}{% include "partials/item_menu.html" %}{% endfor %}
+          {% endif %}
+          {% if outros %}
+            {% if promocoes or destaques %}<h3>Mais do cardápio</h3>{% endif %}
+            {% for prato in outros %}{% include 'partials/item_menu.html' %}{% endfor %}
+          {% endif %}
+        {% else %}
+          <p class="vazio">Esta cafeteria ainda não publicou o cardápio.</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <div class="col-lg-5">
+      {% if not eh_dono_cafe %}
+      <section class="painel">
+        <h2 class="h5">Esteve aqui?</h2>
+        <p class="texto-suave small">
+          {% if visitas %}Você registrou {{ visitas }} visita{{ visitas|pluralize }} aqui.{% else %}Registre a visita para lembrar depois e poder pedir itens esquecidos.{% endif %}
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <form method="post" action="{% url 'add_to_historico' estabelecimento.id %}">{% csrf_token %}
+            <button class="btn btn-claro btn-sm" type="submit"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Registrar visita</button>
+          </form>
+          <a class="btn btn-claro btn-sm" href="{% url 'feedback' estabelecimento.id %}"><i class="bi bi-star me-1" aria-hidden="true"></i>Avaliar</a>
+          <a class="btn btn-claro btn-sm" href="{% url 'solicitaritem' estabelecimento.id %}"><i class="bi bi-umbrella me-1" aria-hidden="true"></i>Esqueci algo</a>
+        </div>
+      </section>
+      {% endif %}
+
+      <section class="painel">
+        <div class="painel-titulo">
+          <h2 class="h5">Avaliações recentes</h2>
+          {% if total_avaliacoes %}<a class="small" href="{% url 'verFeedbacks' estabelecimento.id %}">Ver todas</a>{% endif %}
+        </div>
+        {% for fb in feedbacks %}
+          {% include 'partials/avaliacao.html' %}
+        {% empty %}
+          <p class="texto-suave mb-0">Ninguém avaliou ainda.{% if not eh_dono_cafe %} <a href="{% url 'feedback' estabelecimento.id %}">Seja a primeira pessoa</a>.{% endif %}</p>
+        {% endfor %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

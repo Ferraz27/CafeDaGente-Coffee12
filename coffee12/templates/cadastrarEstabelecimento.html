@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block titulo %}Cadastrar cafeteria{% endblock %}
+
+{% block conteudo %}
+<div class="container container-estreito">
+  <div class="cabecalho">
+    <h1>Cadastrar cafeteria</h1>
+    <p>Essas informações aparecem na página pública da sua cafeteria. Dá para mudar depois.</p>
+  </div>
+  {% include 'partials/form_estabelecimento.html' with texto_botao='Cadastrar cafeteria' %}
+</div>
+{% endblock %}

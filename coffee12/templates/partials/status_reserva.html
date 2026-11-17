@@ -1,0 +1,4 @@
+{% if reserva.status == 'PE' %}<span class="etiqueta etiqueta-alerta">Aguardando confirmação</span>
+{% elif reserva.status == 'AC' %}<span class="etiqueta etiqueta-sucesso">Confirmada</span>
+{% elif reserva.status == 'RE' %}<span class="etiqueta etiqueta-perigo">Recusada</span>
+{% else %}<span class="etiqueta">Cancelada</span>{% endif %}

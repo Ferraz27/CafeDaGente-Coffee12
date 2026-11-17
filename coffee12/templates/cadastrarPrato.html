@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}{% if prato %}Editar {{ prato.nome }}{% else %}Novo item{% endif %}{% endblock %}
+
+{% block conteudo %}
+<div class="container container-estreito">
+  <div class="cabecalho">
+    <a class="small" href="{% url 'excluirPrato' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Cardápio</a>
+    <h1 class="mt-2">{% if prato %}Editar {{ prato.nome }}{% else %}Novo item no cardápio{% endif %}</h1>
+    <p>Itens com preço promocional aparecem em “Promoções”. Pratos principais ganham destaque na busca.</p>
+  </div>
+
+  <form method="post" class="painel formulario" novalidate>
+    {% csrf_token %}
+    {% campo form.nome %}
+    {% campo form.descricao %}
+    <div class="row g-2">
+      <div class="col-sm-6">{% campo form.preco %}</div>
+      <div class="col-sm-6">{% campo form.preco_promocional %}</div>
+    </div>
+    {% campo form.prato_principal %}
+    <div class="d-flex flex-wrap gap-2">
+      {% if prato %}
+        <button class="btn btn-primary" type="submit">Salvar alterações</button>
+      {% else %}
+        <button class="btn btn-primary" type="submit">Adicionar ao cardápio</button>
+        <button class="btn btn-claro" type="submit" name="adicionar_outro" value="1">Adicionar e criar outro</button>
+      {% endif %}
+      <a class="btn btn-link" href="{% url 'homepagecafe' %}">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

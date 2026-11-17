@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Avaliações · {{ estabelecimento.nome }}{% endblock %}
+
+{% block conteudo %}
+<div class="container">
+  <div class="cabecalho">
+    {% if not eh_dono %}<a class="small" href="{% url 'perfilCafeteria' estabelecimento.id %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> {{ estabelecimento.nome }}</a>{% endif %}
+    <h1 class="mt-2">{% if eh_dono %}O que os clientes dizem{% else %}Avaliações da {{ estabelecimento.nome }}{% endif %}</h1>
+  </div>
+
+  {% if total %}
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="painel">
+        <div class="d-flex align-items-center gap-3 mb-3">
+          <span class="nota-grande">{{ rating_average|nota }}</span>
+          <div>
+            {% estrelas rating_average 'lg' %}
+            <div class="texto-suave small">{{ total }} avaliaç{{ total|pluralize:"ão,ões" }}</div>
+          </div>
+        </div>
+        <div class="distribuicao">
+          {% for linha in distribuicao %}
+            <span>{{ linha.nota }} <i class="bi bi-star-fill small" style="color: var(--caramelo)" aria-hidden="true"></i></span>
+            <span class="barra-nota" role="img" aria-label="{{ linha.qtd }} avaliações com nota {{ linha.nota }}"><span style="width: {{ linha.pct }}%"></span></span>
+            <span class="texto-suave">{{ linha.qtd }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="painel py-2">
+        {% for fb in feedbacks %}
+          {% include 'partials/avaliacao.html' %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% else %}
+    <div class="vazio-box">
+      <div class="selo azulejo-3" aria-hidden="true"></div>
+      <h2>Nenhuma avaliação ainda</h2>
+      {% if eh_dono %}
+        <p>As notas e comentários dos clientes vão aparecer aqui.</p>
+      {% elif not eh_dono_cafe %}
+        <p>Já esteve lá? Conte como foi.</p>
+        <a class="btn btn-primary" href="{% url 'feedback' estabelecimento.id %}">Avaliar</a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

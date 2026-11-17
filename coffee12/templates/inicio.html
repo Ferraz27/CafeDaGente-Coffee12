@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load cafe_tags %}
+{% block titulo %}Cafeterias de Recife{% endblock %}
+
+{% block conteudo %}
+<section class="hero">
+  <div class="container hero-grade">
+    <div class="hero-texto">
+      <h1>Encontre a cafeteria certa para hoje.</h1>
+      <p>Veja cardápios e promoções, reserve uma mesa e conte como foi. As cafeterias de Recife e Olinda num lugar só.</p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Criar conta grátis</a>
+        <a class="btn btn-claro btn-lg" href="{% url 'login' %}">Já tenho conta</a>
+      </div>
+      <p class="hero-dono">Tem uma cafeteria? <a href="{% url 'signupCafe' %}">Cadastre seu estabelecimento</a>.</p>
+    </div>
+
+    <div class="vitrine azulejo-1" aria-label="Exemplo de cardápio">
+      {% with top=destaques.0 %}
+      <div class="cardapio">
+        {% if top %}
+          <h2 class="h4 mb-1">{{ top.nome }}</h2>
+          <p class="vitrine-sub">
+            {% if top.media %}{% estrelas top.media %} <span class="ms-1">{{ top.media|nota }}</span> · {% endif %}{{ top.endereco }}
+          </p>
+          {% if top.promocoes %}
+            <h3>Promoções</h3>
+            {% for prato in top.promocoes|slice:":2" %}{% include 'partials/item_menu.html' %}{% endfor %}
+          {% endif %}
+          {% if top.destaques %}
+            <h3>Pratos principais</h3>
+            {% for prato in top.destaques|slice:":2" %}{% if not prato.em_promocao %}{% include 'partials/item_menu.html' %}{% endif %}{% endfor %}
+          {% endif %}
+        {% else %}
+          <h2 class="h4">Cardápio do dia</h2>
+          <p class="vazio">Assim que as cafeterias publicarem seus cardápios, eles aparecem aqui.</p>
+        {% endif %}
+      </div>
+      {% endwith %}
+    </div>
+  </div>
+</section>
+
+<section class="secao">
+  <div class="container">
+    <h2 class="mb-4">Como funciona</h2>
+    <ol class="passos">
+      <li>
+        <h3>Escolha</h3>
+        <p>Busque por nome, bairro ou prato e compare as notas dadas por outros clientes.</p>
+      </li>
+      <li>
+        <h3>Reserve</h3>
+        <p>Peça uma mesa para o horário que quiser. A cafeteria confirma pelo app.</p>
+      </li>
+      <li>
+        <h3>Avalie</h3>
+        <p>Registre a visita, dê sua nota e, se esquecer algo por lá, peça para guardarem.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+{% if destaques %}
+<section class="secao pt-0">
+  <div class="container">
+    <h2 class="mb-4">Mais bem avaliadas</h2>
+    <div class="grade-cafes">
+      {% for cafe in destaques %}
+        {% include 'partials/cafe_card.html' with cafe=cafe mostrar_favorito=False %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

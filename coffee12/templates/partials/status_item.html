@@ -1,0 +1,3 @@
+{% if item.status == 'AC' %}<span class="etiqueta etiqueta-sucesso">Encontrado</span>
+{% elif item.status == 'NE' %}<span class="etiqueta etiqueta-perigo">Não encontrado</span>
+{% else %}<span class="etiqueta etiqueta-alerta">Procurando</span>{% endif %}
