@@ -150,16 +150,3 @@ O projeto nasceu na disciplina Projetos 2 da CESAR School, a partir de história
 
 Em 2026 a aplicação passou por uma revisão completa, mantendo a mesma stack: novo layout e identidade visual, correção de bugs, regras de permissão, validação de formulários e testes automatizados.
 
-### Grupo
-
-Clara Foster Maciel, Camila N. Farias, Júlia Furtado, Paulo Guilherme, Júlia Sales Novais, Luiz Claudio, Maria Helena Urbano, Pedro Dhalia, Lucas Ferraz Santana Filgueiras, Miguel José França e Ícaro Barros.
-
-### Material da disciplina
-
-- [Notion do grupo](https://distinct-rhubarb-0a9.notion.site/Notion-do-G12-3bfe1143afc6404eacf3dee57135c0dd?pvs=4)
-- [Google Sites](https://sites.google.com/cesar.school/queremoscafe-g12?usp=sharing)
-- [Google Drive](https://drive.google.com/drive/folders/1uxPJ6H_WYI4_X0wMdg2IrY-lmEsm_0Vb?usp=sharing)
-- [Diagrama de atividades](https://lucid.app/lucidchart/972cf9c0-e0a0-48d4-ad8f-afb9259920fe/edit?beaconFlowId=7BD4ABDA3C7B83C2&invitationId=inv_3ca14424-7823-4e1f-a13d-d44c11858e4b&page=0_0)
-- [Protótipo de baixa fidelidade](https://lucid.app/lucidspark/826e0ab7-e4ec-4569-869a-10c4e6e42f82/edit?invitationId=inv_f55a1a31-7dd9-4893-a238-159cd9c78211&page=0_0#)
-- [Screencast do mockup](https://youtu.be/ejQEUXkaveA)
-- [Screencast da implementação](https://youtu.be/7aSX_eD-i7M)
